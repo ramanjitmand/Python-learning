@@ -1,4 +1,6 @@
 import pandas as pd
+# Did line below in session 3
+import numpy as np
 # Import class below
 from dateutil.relativedelta import relativedelta
 # Add this from having made __init__.py in new config_903 folder
@@ -103,3 +105,42 @@ def clean_903_table(df: pd.DataFrame, collection_end: pd.Timestamp):
     # Writing as a lambda will be massive so let's not do that
 
     return clean_df
+
+# def group_calculation():
+#     pass
+
+def group_calculation(df, column):
+    grouped = df.groupby([column]).size()
+    grouped = grouped.to_frame('Count').reset_index()
+
+    grouped['Percentage'] =  (grouped['Count'] / grouped['Count'].sum() ) * 100
+
+    return grouped
+# We need to put things into PBI or Tableu etc 
+# DfE test data - time_period, time_identifier etc is always the same 
+# We want to see number, rate, and value (categorical data)
+# Another schools dataset - breakdowns; we want long data rather than wide data
+# Slicer will choose a measure then our visuals will show different values on x-axis and count on y-axis
+# Naming will be seen in next session
+
+# Take grouped df and rewriting over it with another df of the same name
+# Rename column to 'Value'
+# Let's order so it stacks the way we want it to
+    grouped = grouped.rename(columns={column:'Value'})
+    # Let's add another variable which we'll then parse
+    grouped['Measure'] = measure_name
+    grouped_ordered = grouped[["Measure", 'Value', 'Coount', 'Percentage']]
+    return grouped_ordered
+
+def time_difference(start, end, business_days=False):
+    if business_days:
+        # pass
+        # datetime64[D] is a numpy [num - pie] thing so we have to import numpy at top of this file
+        time_diff = np.busday_count(start.astype('datetime64[D]'), end)
+    else:
+    time_diff = end - start
+    time_diff = time_diff / pd.Timedelta(days=1)
+
+    return time_diff
+
+# You don't have to understand all code you do - lol
