@@ -1,7 +1,8 @@
 # From enum module import Enum class (a list, a dictionary, and a df are all types of classes)
 from enum import Enum
 
-# For classes you need to use capitals 
+
+# For classes you need to use capitals
 # Let's make a new class - indented bits underneath will be part of that class
 class DateCols903(Enum):
     # Put columns which are dates here
@@ -19,8 +20,11 @@ class DateCols903(Enum):
         "DATE_PERM",
         "REVIEW",
         "DUC",
-    ]  
+    ]
+
+
 # Now go back to utils
+
 
 class EthnicSubcategories(Enum):
     WBRI = "White"

@@ -144,3 +144,94 @@ def time_difference(start, end, business_days=False):
     return time_diff
 
 # You don't have to understand all code you do - lol
+
+# Done below in session 4
+# None of this worked like it hasn't been in previous session lol
+def multiples_same_event(df, event_name)
+    df = df.copy()
+    # groupby is method used to group stuff
+    # To have as a normal df do size on it - size gives you the counts
+    multiples = df.groupby("CHILD").size().to_frame("Number of events").reset_index()
+    # Let's make into a measure
+    # Let's reassign to multiples
+    multiples = multiples.groupby(["Number of events"]).size().to_frame("Children with number of events").reset_index()
+    # You'll get 2 columns - 'Number of events' and 'Children with number of events' when you do return multiples on line below
+    multiples['Event type'] = "Number of episodes"
+    # Adds 'Event type' column - cell could say e.g. 'Number of episodes' when you do return multiples on line below
+    multiples = multiples[["Event type", "Number of events", "Children with number of events"]]
+                          
+    return multiples
+
+# Python dashboards need wide data (we'll cover in week 6) but PowerBI wants long data 
+
+def group_calculate_year(df, year_col, col_to_group, measure_name):
+    df = df.copy()
+
+    grouped = df.groupby([year_col, col_to_group]).size()
+    grouped = grouped.to_frame("Count").reset_index()
+    # 4 columns (0, 1, 2 on LHS; DECOM_YEAR; Value ; Count) when you do return grouped on line below
+    grouped = grouped.rename(columns[col_to_group:"Value"])
+    
+    # We want to apply to the whole row (earlier in the code we used lambda to do apply for just 1 part)
+    # axis = 1 means we're going on columns not rows or vice versa?
+    grouped["percentage by year"] = grouped.apply(
+        # x refers to the whole row
+        # We want to divide so need to put in / sign
+        # grouped.loc let's us use square bracket notation to make a selection and do more interesting things
+        # grouped.loc bit - We want grouped df where value in year column is same as year column
+        # Let's rename the column using .Count.sum (basically put name of column at start)
+        lambda x: x["Count"] / grouped.loc[grouped[year_col] == x[year_col]].Count.sum()
+        *100,
+        axis=1
+        )
+
+# Let's put in our measure name
+grouped["Measure"] = measure_name
+
+# We can't stack 2 tables - we'll do in PBI later
+
+# We want output with columns in the following order
+grouped = grouped[[year_col, "Measure", "Value", "Count", "Percentage by year"]]
+
+    return grouped
+
+# Let's see what appears in both tables
+def appears_on_both(df1, df2, measure_name):
+    # pass
+    # For df1 drop rows where children appear multiple times
+    df1 = df1.drop_duplicates(subset=["CHILD"]).copy()
+    df2 = df2.drop_duplicates(subset=["CHILD"]).copy()
+
+    # We can use Python to compare sets
+    # set(df1["CHILD"])
+
+    # Let's merge but only join rows where value in row is in both tables - we'll end up with children in both tables!
+    # Do Google search on 'pandas merge type'
+    # 1. Inner - gives overlap
+    # 2. - Outer - gives everythiing
+    # 3. Left - gives left...
+    # 4. Right - same as left except do for right instead... 
+
+    merged_df = df1.merge(df2, how="inner", on=["CHILD"])
+    # If you do return merged_df it comes up with a horrible looking thing in terminal lol
+
+    # Every child in this table will have a 'Yes' in 'on_both' column
+    merged_df["on_both"] = "Yes"
+    # Nothings will appear elsewhere for children not in both
+
+    # Let's merge df1 on merged_df
+    # We're merging on CHILD - you HAVE to merge using on_both otherwise it won't work! 
+    # Let's do a left merge
+    df = df1.merge(merged_df[["CHILD", "on_both"]], how="left", on="CHILD")
+
+    return merged_df
+
+    # on_both column says NaN for blanks which we don't like
+    # Overwrite by doing this-
+    # df = df.fillna({"on_both":"No"})
+    # Rather than overwriting df, put new values in it using following-
+    df.fillna("on_both":"No"), inplace=True
+
+    output = group_calculation(df, "on_both", "measure_name")
+
+    return output
