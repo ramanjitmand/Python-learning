@@ -1,0 +1,4 @@
+# This file was made in session 6
+
+openpyxl
+plotly == 5.5.0
