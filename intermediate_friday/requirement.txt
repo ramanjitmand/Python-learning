@@ -1,4 +1,9 @@
 # This file was made in session 6
 
+# You have to call this requirements.txt every time otherwise it won't work
+
+# Put 2 different things here-
+# Open Excels
 openpyxl
+# We want a specifi version of plotly because pyamide(?) doesn't work with later versions!
 plotly == 5.5.0
